@@ -7,14 +7,14 @@ CREATE TYPE USER_ROLE AS ENUM (
 );
 
 CREATE TABLE IF NOT EXISTS users (
-    id              SERIAL PRIMARY KEY UNIQUE,
-    firstname       VARCHAR(64)        NOT NULL,
-    lastname        VARCHAR(64)        NOT NULL,
-    email           VARCHAR(64)        NOT NULL,
+    id              SERIAL PRIMARY KEY                       UNIQUE,
+    firstname       VARCHAR(64)                              NOT NULL,
+    lastname        VARCHAR(64)                              NOT NULL,
+    email           VARCHAR(64)                              NOT NULL,
     managerID       REFERENCES users (id) ON DELETE CASCADE,
-    role            USER_ROLE          NOT NULL DEFAULT 'user',
-    username        VARCHAR(64) UNIQUE NOT NULL,
-    password        VARCHAR(64)        NOT NULL
+    role            USER_ROLE                                NOT NULL DEFAULT 'user',
+    username        VARCHAR(64)                              UNIQUE NOT NULL,
+    password        VARCHAR(64)                              NOT NULL
 );
 
 -- ----------------------------------------------------------------
@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS tickets (
 -- Assigned
 -- ----------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS assigned (
-    reported_by     USER REFERENCES users (id) ON DELETE CASCADE NOT NULL,
+    reported_by     USER REFERENCES users (id) ON DELETE CASCADE     NOT NULL,
     assigned_to     IT REFERENCES users (id) ON DELETE CASCADE,
-    ticket_id       TICKET REFERENCES tickets (id) ON DELETE CASCADE NOT NULL,
+    ticket_id       TICKET REFERENCES tickets (id) ON DELETE CASCADE NOT NULL
 )
