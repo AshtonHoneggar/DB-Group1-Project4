@@ -1,0 +1,22 @@
+# Binaries for programs and plugins
+*.exe
+*.dll
+*.so
+*.dylib
+*.ts
+*.mp4
+*.m4s
+*.h264
+*.webm
+*.wav
+
+# Test binary, build with `go test -c`
+*.test
+*.log
+*.db
+
+# Folders that don't need to be uploaded
+
+
+# For GoLand IDE
+.idea/
