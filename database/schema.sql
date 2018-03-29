@@ -30,8 +30,8 @@ CREATE TYPE TICKET_STATUS AS ENUM (
 
 CREATE TYPE ISSUE_TYPE AS ENUM (
     'other',
-    'another issue type',
-    'another issue type'
+    'hardware',
+    'software'
 );
 
 CREATE TABLE IF NOT EXISTS tickets (
