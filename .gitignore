@@ -18,5 +18,6 @@
 # Folders that don't need to be uploaded
 
 
-# For GoLand IDE
+# For PyCharm IDE
 .idea/
+*.pyc
