@@ -35,19 +35,20 @@ CREATE TYPE ISSUE_TYPE AS ENUM (
 
 CREATE TABLE IF NOT EXISTS tickets (
     id              SERIAL PRIMARY KEY UNIQUE,
+    reported_by     varchar(64) REFERENCES users (username) ON DELETE CASCADE NOT NULL,
     issue           ISSUE_TYPE         NOT NULL DEFAULT 'other',
     status          TICKET_STATUS      NOT NULL DEFAULT 'open',
     user_comment    VARCHAR(64)        NOT NULL,
     IT_comment      VARCHAR(64)        NOT NULL,
-    date_opened     BIGINT             NOT NULL,
-    date_closed     BIGINT
+    date_opened     Date               NOT NULL,
+    date_closed     Date
 );
 
 -- ----------------------------------------------------------------
 -- Assigned
 -- ----------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS assigned (
-    reported_by     INTEGER REFERENCES users (id) ON DELETE CASCADE   NOT NULL,
-    assigned_to     INTEGER REFERENCES users (id) ON DELETE CASCADE,
+    reported_by     varchar(64) REFERENCES users (username) ON DELETE CASCADE   NOT NULL,
+    assigned_to     varchar(64) REFERENCES users (username) ON DELETE CASCADE,
     ticket_id       INTEGER REFERENCES tickets (id) ON DELETE CASCADE NOT NULL
 );
