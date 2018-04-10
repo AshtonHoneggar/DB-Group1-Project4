@@ -30,26 +30,37 @@ def dict_factory(cursor, row):
 def login():
     user = request.form['username'];
     password = request.form['password'];
-    con = sql.connect("dbname='ITsupport' user='postgres' host='localhost' password='password'")
-    con.row_factory = dict_factory
-    cur = con.cursor()
-    cur.execute("SELECT * FROM users WHERE username=?", user)
-    temp = cur.fetchone()
-    cur.close()
+    #TODO: Un-comment out the below lines - Troubleshoot database connection
+    #con = sql.connect("dbname='ITsupport' user='postgres' host='localhost' password='password'")
+    #con.row_factory = dict_factory
+    #cur = con.cursor()
+    #cur.execute("SELECT * FROM users WHERE username=?", user)
+    #temp = cur.fetchone()
+    #cur.close()
+    
+    #Remove line below when connecting to database
+    temp = {"email": "testEmail@gmail.com", "firstname": "testName", "lastname": "testlastName", "role": "IT", "username": "testUser", "password": "testPass"}
+    #Remove line above when connecting to database
+    #Below line is for troubleshooting - remove when done
     print(temp)
-    if email == temp["email"] and password == temp["password"]:
+    #Above line is for troubleshooting - remove when done
+    
+    #if user and password are not in users table, error message appears
+    if user == temp["username"] and password == temp["password"]:
         return jsonify({
             'auth': True,
             'user': {
                 "username": user,
                 "firstName": temp["firstname"],
-                "lastName": temp["lastname"]
+                "lastName": temp["lastname"], 
+                "role":temp["role"]
             }
         })
     else:
         return jsonify({
             'auth': False
         })
+
 
 #Post request method for /register
 @app.route('/register', methods=['POST'])
