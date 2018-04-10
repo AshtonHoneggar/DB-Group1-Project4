@@ -1,5 +1,7 @@
 $(document).ready(function(){
     $('#homeComponent').hide();
+    $('#itHome').hide();
+    $('#userHome').hide();
     $('#Login').on('click', function() {
         $.ajax({
             url: '/login',
@@ -11,6 +13,15 @@ $(document).ready(function(){
                     localStorage.setItem('userdata', JSON.stringify(response.user));
                     $('#loginComponent').hide();
                     $('#homeComponent').show();
+                    let user = JSON.parse(localStorage.getItem('userdata'));
+                     console.log(user)
+                    if (user.role == 'IT')
+                      {  $('#itHome').show();
+                        $('#userHome').hide(); }
+                    else {
+                        $('#itHome').hide();
+                        $('#userHome').show();
+                    }
                     populateUser();
                     // getTable();
                 }else{
@@ -58,19 +69,29 @@ $(document).ready(function(){
     $('#PopulateTable').on('click', function() {
         getTable();
     });
-
+    //For itHome
     $('#EventSubmit').on('click', function() {
-        let user = JSON.parse(localStorage.getItem('userdata'));
-        let tempForm = {
-            email: user.email,
+        let user3 = JSON.parse(localStorage.getItem('userdata'));
+        let tempForm1 = {
+            email: user3.email,
             eventName: $('#eventName').val(),
             eventTime: $('#eventTime').val(),
             eventUrl: $('#eventUrl').val()
         };
-        console.log(tempForm)
+    //For userHome
+    $('#EventSubmit2').on('click', function() {
+        let user4 = JSON.parse(localStorage.getItem('userdata'));
+        let tempForm2 = {
+            email: user4.email,
+            eventName: $('#eventName2').val(),
+            eventTime: $('#eventTime2').val(),
+            eventUrl: $('#eventUrl2').val()
+        };
+        console.log(tempForm1)
+        console.log(tempForm2)
         $.ajax({
             url: '/newEvent',
-            data: tempForm,
+            data: tempForm1,
             type: 'POST',
             success: function(response) {
                 console.log(response);
@@ -92,10 +113,12 @@ $(document).ready(function(){
     });
 
     function populateUser(){
-        let user = JSON.parse(localStorage.getItem('userdata'));
-        console.log(user)
-        $('#greeting').append(user.firstName)
+        let user1 = JSON.parse(localStorage.getItem('userdata'));
+        console.log(user1)
+        $('#greeting1').append(user1.firstName)
+        $('#greeting2').append(user2.firstName)
     }
+   
 
     function getTable(){
         tempuser = localStorage.getItem('userdata');
