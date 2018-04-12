@@ -86,7 +86,7 @@ def register():
         })
 
 #################################################################################
-# Tickets
+# Tickets/assigned
 #################################################################################
 @app.route('/getTickets', methods=['GET'])
 def getOpenTickets():
@@ -145,25 +145,54 @@ def newTicket():
     cur.close()
     con.close()
     return jsonify({
-       'registered': True
+       'newticket': True
     })
-# Example: replace with newTicket
-# @app.route('/newEvent', methods=['POST'])
-# def newEvent():
-#     email = request.form['email']
-#     eventName =  request.form['eventName'];
-#     eventTime = request.form['eventTime'];
-#     eventUrl = request.form['eventUrl'];
-#     con = sql.connect("temp.db", timeout=10)
-#     con.row_factory = dict_factory
-#     cur = con.cursor()
-#     # Uncomment the following line to create the table then comment it again after the first registration
-#     # cur.execute("CREATE TABLE event(id INT PRIMARY_KEY, email TEXT, eventName TEXT, eventTime TEXT, eventUrl TEXT)")
-#     uid = str(uuid.uuid4())
-#     cur.execute("""INSERT INTO event(id, email, eventName, eventTime, eventUrl) VALUES (?,?,?,?,?);""", (uid, email, eventName, eventTime, eventUrl))
-#     con.commit()
-#     cur.close()
-#     con.close()
-#     return jsonify({
-#         'newEventStatus': True
-#     })
+
+@app.route('/assignTicket', methods=['POST'])
+def assignTicket():
+    user = request.args.get("temp")
+    # TODO: how do we get ticketID of the ticket being assigned to?
+    # ticketID = getTicketID()
+    con = sql.connect("ITsupport.db", timeout=10)
+    con.row_factory = dict_factory
+    cur = con.cursor()
+    cur.execute("CREATE TABLE IF NOT EXISTS assigned ("
+                "reported_by     varchar(64) REFERENCES users (username) ON DELETE CASCADE   NOT NULL,"
+                "assigned_to     varchar(64) REFERENCES users (username) ON DELETE CASCADE,"
+                "ticket_id       INTEGER REFERENCES tickets (id) ON DELETE CASCADE NOT NULL)")
+    cur.execute("UPDATE assigned SET assigned_to=? WHERE ticket_id", (user, ticketID))
+    con.commit()
+    cur.close()
+    con.close()
+    return jsonify({
+       'assign_it': True
+    })
+
+@app.route('/status', methods=['POST'])
+def ticketStatus():
+    status = request.form['tixstatus']
+    comment = request.form['closecomment']
+    # TODO: how do we know which ticket is being changed?
+    # ticketID = getTicketID()
+    con = sql.connect("ITsupport.db", timeout=10)
+    con.row_factory = dict_factory
+    cur = con.cursor()
+    # TODO: if else can be list comprehension but i forget format
+    if status == 'open':
+        cur.execute("UPDATE ticket SET status=? WHERE ticket_id", (status, ticketID))
+    elif status == 'in_progress':
+        cur.execute("UPDATE ticket SET status=? WHERE ticket_id", (status, ticketID))
+    elif status == 'closed':
+        # TODO: need a way to get the IT comment
+        cur.execute("UPDATE ticket SET status=?, it_comment=?, date_closed=? WHERE ticket_id=?", (status, comment, strftime("%Y-%m-%d", gmtime()), ticketID))
+    else:
+        return jsonify({
+            # ajax return failed to update status
+            'ticketstatus': False
+        })
+    con.commit()
+    cur.close()
+    con.close()
+    return jsonify({
+       'ticketstatus': True
+    })
