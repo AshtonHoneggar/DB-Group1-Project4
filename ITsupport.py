@@ -114,6 +114,36 @@ def getOpenTickets():
         'opentickets': ticketdata
     })
 
+@app.route('/getAssigned', methods=['GET'])
+def getAssignedTickets():
+    user = request.args.get("temp")
+    con = sql.connect("ITsupport.db", timeout=10)
+    con.row_factory = dict_factory
+    cur = con.cursor()
+    cur.execute("CREATE TYPE TICKET_STATUS AS ENUM('open', 'in_progress', 'closed')")
+    cur.execute("CREATE TYPE ISSUE_TYPE AS ENUM('other', 'hardware', 'software')")
+    cur.execute("CREATE TABLE IF NOT EXISTS tickets("
+                "id              SERIAL             PRIMARY KEY,"
+                "reported_by     varchar(64)        REFERENCES users (username) ON DELETE CASCADE NOT NULL,"
+                "issue           ISSUE_TYPE         NOT NULL DEFAULT 'other',"
+                "status          TICKET_STATUS      NOT NULL DEFAULT 'open',"
+                "user_comment    VARCHAR(64)        NOT NULL,"
+                "IT_comment      VARCHAR(64)        NOT NULL,"
+                "date_opened     Date               NOT NULL,"
+                "date_closed     Date)")
+    cur.execute("CREATE TABLE IF NOT EXISTS assigned ("
+                "reported_by     varchar(64) REFERENCES users (username) ON DELETE CASCADE   NOT NULL,"
+                "assigned_to     varchar(64) REFERENCES users (username) ON DELETE CASCADE,"
+                "ticket_id       INTEGER REFERENCES tickets (id) ON DELETE CASCADE NOT NULL)")
+    cur.execute("SELECT T.* FROM tickets T, assigned A WHERE (A.assigned_to=? OR A.reported_by=?) AND A.ticket_id=T.id ORDER BY T.date_opened DESC", (user, user))
+    ticketdata = cur.fetchall()
+    con.commit()
+    cur.close()
+    con.close()
+    return jsonify({
+        'assignedtickets': ticketdata
+    })
+
 @app.route('/newTicket', methods=['POST'])
 def newTicket():
     user = request.args.get("temp")
