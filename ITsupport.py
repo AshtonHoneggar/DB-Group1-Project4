@@ -13,17 +13,19 @@ if __name__ == "__main__":
     app.run(port=5000)
 
 
-#Route for /
-@app.route("/")
-def main():
-    return render_template('/index.html')
-
 #Make SQL cursor return dictionary
 def dict_factory(cursor, row):
     d = {}
     for idx, col in enumerate(cursor.description):
         d[col[0]] = row[idx]
     return d
+
+#################################################################################
+# main
+#################################################################################
+@app.route("/")
+def main():
+    return render_template('/index.html')
 
 #################################################################################
 # login/register
@@ -54,7 +56,6 @@ def login():
             'auth': False
         })
 
-#Post request method for /register
 @app.route('/register', methods=['POST'])
 def register():
     first = request.form['firstreg']
@@ -122,7 +123,7 @@ def newTicket():
     con = sql.connect("ITsupport.db", timeout=10)
     con.row_factory = dict_factory
     cur = con.cursor()
-    #TODO: sqlite3 does not like create type as enum, if all else fails make a drop down box on front end
+    #TODO: sqlite3 does not like create type as enum, if all else fails enum as a drop down box on front end
     # cur.execute("CREATE TYPE TICKET_STATUS AS ENUM('open', 'in_progress', 'closed')")
     # cur.execute("CREATE TYPE ISSUE_TYPE AS ENUM('other', 'hardware', 'software')")
     cur.execute("CREATE TABLE IF NOT EXISTS tickets("
@@ -177,7 +178,6 @@ def ticketStatus():
     con = sql.connect("ITsupport.db", timeout=10)
     con.row_factory = dict_factory
     cur = con.cursor()
-    # TODO: if else can be list comprehension but i forget format
     if status == 'open':
         cur.execute("UPDATE ticket SET status=? WHERE ticket_id", (status, ticketID))
     elif status == 'in_progress':
@@ -187,7 +187,7 @@ def ticketStatus():
         cur.execute("UPDATE ticket SET status=?, it_comment=?, date_closed=? WHERE ticket_id=?", (status, comment, strftime("%Y-%m-%d", gmtime()), ticketID))
     else:
         return jsonify({
-            # ajax return failed to update status
+            # ajax return failed to update status/not a correct enum value
             'ticketstatus': False
         })
     con.commit()
