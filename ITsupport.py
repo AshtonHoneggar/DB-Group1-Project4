@@ -126,8 +126,9 @@ def get_assigned_tickets():
 
 @app.route('/newTicket', methods=['POST'])
 def new_ticket():
+    print ("Inside new Ticket function")
     user = request.args.get("temp")
-    issue = request.form['issuetix']
+    issue = request.form['ticketType']
     comment = request.form['commenttix']
     con = sql.connect("ITsupport.db", timeout=10)
     con.row_factory = dict_factory
@@ -144,6 +145,7 @@ def new_ticket():
     return jsonify({
        'newticket': True
     })
+    
 
 
 @app.route('/assignTicket', methods=['POST'])
