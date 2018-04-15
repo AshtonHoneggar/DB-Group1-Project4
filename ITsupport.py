@@ -90,6 +90,7 @@ def register():
 
 
 @app.route('/getTickets', methods=['POST'])
+# used for IT to get all open tickets, use /getAssigned to return your tickets
 def get_open_tickets():
     con = sql.connect("ITsupport.db", timeout=10)
     con.row_factory = dict_factory

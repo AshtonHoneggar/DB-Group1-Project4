@@ -19,7 +19,7 @@ $(document).ready(function(){
                     else
                         $('#userHome').show();
                     populateUser();
-                    // getTable();
+                    getAssignedTable();
                 }else{
                     $('#errorMessageLogin').text('Incorrect email and/or password.')
                 }
@@ -62,7 +62,7 @@ $(document).ready(function(){
             }
         });
     });
-
+    // Repurpose as Update Table?
     $('#PopulateTable').on('click', function() {
         getTable();
     });
@@ -70,7 +70,7 @@ $(document).ready(function(){
     $('#EventSubmit').on('click', function() {
         let user3 = JSON.parse(localStorage.getItem('userdata'));
         let tempForm1 = {
-            email: user3.email,
+            username: user3.username,
             eventName: $('#eventName').val(),
             eventTime: $('#eventTime').val(),
             eventUrl: $('#eventUrl').val()
@@ -80,7 +80,7 @@ $(document).ready(function(){
     $('#EventSubmit2').on('click', function() {
         let user4 = JSON.parse(localStorage.getItem('userdata'));
         let tempForm2 = {
-            email: user4.email,
+            username: user4.username,
             eventName: $('#eventName2').val(),
             eventTime: $('#eventTime2').val(),
             eventUrl: $('#eventUrl2').val()
@@ -117,17 +117,17 @@ $(document).ready(function(){
     }
 
 
-    function getTable(){
+    function getAssignedTable(){
         tempuser = localStorage.getItem('userdata');
         let parseduser;
         if (tempuser) {
             parseduser = JSON.parse(tempuser);
-            let email = parseduser.email;
-            console.log(email);
+            let user = parseduser.username;
+            console.log(user);
             $.ajax({
-                url: '/getTickets',
+                url: '/getAssigned',
                 data: {
-                    temp: email
+                    temp: user
                 },
                 contentType: 'application/json',
                 dataType: 'json',
