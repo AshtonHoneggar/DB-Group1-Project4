@@ -37,8 +37,11 @@
                         <h2>Register </h2>
                         <input type="text" name="firstreg" class="form-control" placeholder="First Name" required autofocus>
                         <input type="text" name="lastreg" class="form-control" placeholder="Last Name" required>
-                        <!-- TODO: Role drop down menu -->
-                        <input type="text" name="rolereg" class="form-control" placeholder="User Role" required>
+                        <select name="rolereg" class="form-control">
+                            <option value="" disabled selected>User role</option>
+                            <option value="user">User</option>
+                            <option value="IT">IT</option>
+                        </select>
                         <input type="text" name="userreg" class="form-control" placeholder="User Name" required>
                         <input type="password" name="passwordreg" class="form-control" placeholder="Password" required>
                         <input type="password" name="passwordconfreg" class="form-control" placeholder="Confirm Password" required>
@@ -149,8 +152,12 @@
                             <div id='newEventDiv2' class="col-md-8 offset-md-2">
                                 <form class="form-signin" id='newEventForm2' role="form">
                                     <h2>Create new ticket</h2>
-                                    <!-- TODO: create ticket form with drop down for issue type -->
-                                    <input type="text" name="eventName" id="eventName2" class="form-control" placeholder="Issue Type" required autofocus value="">
+                                    <select name="eventName" id="eventName2" class="form-control" required autofocus>
+                                        <option value="" disabled selected>Issue Type</option>
+                                        <option value="software">Software</option>
+                                        <option value="hardware">Hardware</option>
+                                        <option value="other">Other</option>
+                                    </select>
                                     <input type="text" name="eventTime" id="eventTime2" class="form-control" placeholder="User Comment" required value="">
                                     <input type="text" name="eventUrl" id="eventUrl2" class="form-control" placeholder="Date Opened" required value="">
                                     <span id='errorMessageNewEvent2'></span>
