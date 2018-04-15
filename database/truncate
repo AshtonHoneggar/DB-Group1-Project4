@@ -1,3 +1,0 @@
---command truncates all SQL tables in the database
-
-Truncate table users, tickets, assigned;

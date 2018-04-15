@@ -13,15 +13,15 @@
      <link href="{{ url_for('static', filename='styles/bootstrap.min.css') }}" rel="stylesheet">
      <!-- Font Style import -->
      <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
-     <!-- Custom styles for this template -->
+     <!-- Custom -->
      <link href="{{ url_for('static', filename='styles/style.css') }}" rel="stylesheet">
+     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
      <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
      <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
  </head>
 
  <body>
-      <div id='loginComponent' class="container">
+    <div id='loginComponent' class="container">
         <div class='row'>
             <div id='loginDiv' class="col-md-6">
                 <form class="form-signin" id='formLogin' role="form">
@@ -37,7 +37,6 @@
                     <h2>Register </h2>
                     <input type="text" name="firstreg" class="form-control" placeholder="First Name" required autofocus>
                     <input type="text" name="lastreg" class="form-control" placeholder="Last Name" required>
-                    <input type="email" name="emailreg" class="form-control" placeholder="Email address" required>
                     <!-- TODO: Role drop down menu -->
                     <input type="text" name="rolereg" class="form-control" placeholder="User Role" required>
                     <input type="text" name="userreg" class="form-control" placeholder="User Name" required>
@@ -60,8 +59,8 @@
         <div class="container">
             <div class="row">
                 <h1 id="greeting">Welcome&nbsp;</h1>
-            </div> 
-            
+            </div>
+
             <!-- If role in users table is "IT", then display this page -->
             <div id='itHome'>
             <script src="{{ url_for('static', filename='js/home.js') }}"></script>
