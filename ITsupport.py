@@ -1,10 +1,8 @@
-import os
+import schema
 import sqlite3 as sql
-import sys
-import uuid
-from os.path import join, dirname
-from flask import Flask, request, Response, json, jsonify, render_template
+from flask import Flask, request, jsonify, render_template
 from time import gmtime, strftime
+
 
 app = Flask(__name__, template_folder='static')
 app.config['DEBUG'] = True
@@ -13,7 +11,7 @@ if __name__ == "__main__":
     app.run(port=5000)
 
 
-#Make SQL cursor return dictionary
+# Make SQL cursor return dictionary
 def dict_factory(cursor, row):
     d = {}
     for idx, col in enumerate(cursor.description):
@@ -23,6 +21,8 @@ def dict_factory(cursor, row):
 #################################################################################
 # main
 #################################################################################
+
+
 @app.route("/")
 def main():
     return render_template('/index.html')
@@ -30,18 +30,20 @@ def main():
 #################################################################################
 # login/register
 #################################################################################
+
+
 @app.route('/login', methods=['POST'])
 def login():
     user = request.form['username']
     password = request.form['password']
-    con = sql.connect("ITsupport.db", timeout=10)
+    con = sql.connect("ITsupport.db")
     con.row_factory = dict_factory
     cur = con.cursor()
-    cur.execute("SELECT * FROM users WHERE username=?", user)
+    cur.execute(schema.login_user, (user,))
     temp = cur.fetchone()
     cur.close()
-    #if user and password are not in users table, error message appears
-    if user == temp["username"] and password == temp["password"]:
+    # if user and password are not in users table, error message appears
+    if user == temp['username'] and password == temp['password']:
         return jsonify({
             'auth': True,
             'user': {
@@ -56,11 +58,11 @@ def login():
             'auth': False
         })
 
+
 @app.route('/register', methods=['POST'])
 def register():
     first = request.form['firstreg']
     last = request.form['lastreg']
-    email = request.form['emailreg']
     role = request.form['rolereg']
     user = request.form['userreg']
     password = request.form['passwordreg']
@@ -68,110 +70,73 @@ def register():
     con = sql.connect("ITsupport.db", timeout=10)
     con.row_factory = dict_factory
     cur = con.cursor()
-    cur.execute("CREATE TYPE USER_ROLE AS ENUM ('user', 'it')")
-    cur.execute("CREATE TABLE IF NOT EXISTS users("
-                "id              SERIAL             PRIMARY KEY,"
-                "firstname       VARCHAR(64)        NOT NULL,"
-                "lastname        VARCHAR(64)        NOT NULL,"
-                "email           VARCHAR(64)        NOT NULL,"
-                "role            USER_ROLE          NOT NULL DEFAULT 'user',"
-                "username        VARCHAR(64)        UNIQUE NOT NULL,"
-                "password        VARCHAR(64)        NOT NULL)")
+    cur.execute(schema.create_user)
     if password == passwordconf:
-        cur.execute("INSERT INTO users(firstname, lastname, email, role, username, password) VALUES (?,?,?,?,?,?);", (first, last, email, role, user, password))
+        cur.execute(schema.register_user, (first, last, role, user, password))
         con.commit()
         cur.close()
         con.close()
         return jsonify({
             'registered': True
         })
+    else:
+        return jsonify({
+            'registered': False
+        })
 
 #################################################################################
 # Tickets/assigned
 #################################################################################
-@app.route('/getTickets', methods=['GET'])
-def getOpenTickets():
+
+
+@app.route('/getTickets', methods=['POST'])
+def get_open_tickets():
     con = sql.connect("ITsupport.db", timeout=10)
     con.row_factory = dict_factory
     cur = con.cursor()
-    cur.execute("CREATE TYPE TICKET_STATUS AS ENUM('open', 'in_progress', 'closed')")
-    cur.execute("CREATE TYPE ISSUE_TYPE AS ENUM('other', 'hardware', 'software')")
-    cur.execute("CREATE TABLE IF NOT EXISTS tickets("
-                "id              SERIAL             PRIMARY KEY,"
-                "reported_by     varchar(64)        REFERENCES users (username) ON DELETE CASCADE NOT NULL,"
-                "issue           ISSUE_TYPE         NOT NULL DEFAULT 'other',"
-                "status          TICKET_STATUS      NOT NULL DEFAULT 'open',"
-                "user_comment    VARCHAR(64)        NOT NULL,"
-                "IT_comment      VARCHAR(64)        NOT NULL,"
-                "date_opened     Date               NOT NULL,"
-                "date_closed     Date)")
-    cur.execute("SELECT * FROM tickets WHERE date_closed=NULL")
-    ticketdata = cur.fetchall()
+    cur.execute(schema.create_ticket)
+    cur.execute(schema.open_ticket)
+    open_data = cur.fetchall()
     con.commit()
     cur.close()
     con.close()
     return jsonify({
-        'opentickets': ticketdata
+        'opentickets': open_data
     })
 
-@app.route('/getAssigned', methods=['GET'])
-def getAssignedTickets():
+
+@app.route('/getAssigned', methods=['POST'])
+def get_assigned_tickets():
     user = request.args.get("temp")
     con = sql.connect("ITsupport.db", timeout=10)
     con.row_factory = dict_factory
     cur = con.cursor()
-    cur.execute("CREATE TYPE TICKET_STATUS AS ENUM('open', 'in_progress', 'closed')")
-    cur.execute("CREATE TYPE ISSUE_TYPE AS ENUM('other', 'hardware', 'software')")
-    cur.execute("CREATE TABLE IF NOT EXISTS tickets("
-                "id              SERIAL             PRIMARY KEY,"
-                "reported_by     varchar(64)        REFERENCES users (username) ON DELETE CASCADE NOT NULL,"
-                "issue           ISSUE_TYPE         NOT NULL DEFAULT 'other',"
-                "status          TICKET_STATUS      NOT NULL DEFAULT 'open',"
-                "user_comment    VARCHAR(64)        NOT NULL,"
-                "IT_comment      VARCHAR(64)        NOT NULL,"
-                "date_opened     Date               NOT NULL,"
-                "date_closed     Date)")
-    cur.execute("CREATE TABLE IF NOT EXISTS assigned ("
-                "reported_by     varchar(64) REFERENCES users (username) ON DELETE CASCADE   NOT NULL,"
-                "assigned_to     varchar(64) REFERENCES users (username) ON DELETE CASCADE,"
-                "ticket_id       INTEGER REFERENCES tickets (id) ON DELETE CASCADE NOT NULL)")
-    cur.execute("SELECT T.* FROM tickets T, assigned A WHERE (A.assigned_to=? OR A.reported_by=?) AND A.ticket_id=T.id ORDER BY T.date_opened DESC", (user, user))
-    ticketdata = cur.fetchall()
+    cur.execute(schema.create_ticket)
+    cur.execute(schema.create_assigned)
+    cur.execute(schema.assigned_ticket, (user, user))
+    assigned_data = cur.fetchall()
     con.commit()
     cur.close()
     con.close()
     return jsonify({
-        'assignedtickets': ticketdata
+        'assignedtickets': assigned_data
     })
+
 
 @app.route('/newTicket', methods=['POST'])
-def newTicket():
+def new_ticket():
     user = request.args.get("temp")
     issue = request.form['issuetix']
-    comment = reqest.form['commenttix']
-
+    comment = request.form['commenttix']
     con = sql.connect("ITsupport.db", timeout=10)
     con.row_factory = dict_factory
     cur = con.cursor()
-    #TODO: sqlite3 does not like create type as enum, if all else fails enum as a drop down box on front end
-    # cur.execute("CREATE TYPE TICKET_STATUS AS ENUM('open', 'in_progress', 'closed')")
-    # cur.execute("CREATE TYPE ISSUE_TYPE AS ENUM('other', 'hardware', 'software')")
-    cur.execute("CREATE TABLE IF NOT EXISTS tickets("
-                "id              SERIAL             PRIMARY KEY,"
-                "issue           ISSUE_TYPE         NOT NULL DEFAULT 'other',"
-                "status          TICKET_STATUS      NOT NULL DEFAULT 'open',"
-                "user_comment    VARCHAR(64)        NOT NULL,"
-                "IT_comment      VARCHAR(64),"
-                "date_opened     VARCHAR(64)               NOT NULL,"
-                "date_closed     VARCHAR(64))")
-    cur.execute("CREATE TABLE IF NOT EXISTS assigned ("
-                "reported_by     varchar(64) REFERENCES users (username) ON DELETE CASCADE   NOT NULL,"
-                "assigned_to     varchar(64) REFERENCES users (username) ON DELETE CASCADE,"
-                "ticket_id       INTEGER REFERENCES tickets (id) ON DELETE CASCADE NOT NULL)")
-    cur.execute("INSERT INTO tickets(issue, user_comment, date_opened) VALUES (?,?,?);", (issue, comment, strftime("%Y-%m-%d", gmtime())))
-    ticketID = cur.lastrowid
+    cur.execute(schema.create_ticket)
+    cur.execute(schema.create_assigned)
+    cur.execute(schema.new_ticket, (issue, comment, strftime("%Y-%m-%d", gmtime())))
+    ticket_id = cur.lastrowid
     con.commit()
-    cur.execute("INSERT INTO assigned(reported_by, ticket_id) VALUES (?,?)", (user, ticketID))
+    cur.execute(schema.assign_report, (user, ticket_id))
     con.commit()
     cur.close()
     con.close()
@@ -179,19 +144,18 @@ def newTicket():
        'newticket': True
     })
 
+
 @app.route('/assignTicket', methods=['POST'])
-def assignTicket():
+def assign_ticket():
     user = request.args.get("temp")
-    # TODO: how do we get ticketID of the ticket being assigned to?
-    # ticketID = getTicketID()
+    # IT inputs ticket id to assign them to it
+    ticket_id = request.form['assigntix']
     con = sql.connect("ITsupport.db", timeout=10)
     con.row_factory = dict_factory
     cur = con.cursor()
-    cur.execute("CREATE TABLE IF NOT EXISTS assigned ("
-                "reported_by     varchar(64) REFERENCES users (username) ON DELETE CASCADE   NOT NULL,"
-                "assigned_to     varchar(64) REFERENCES users (username) ON DELETE CASCADE,"
-                "ticket_id       INTEGER REFERENCES tickets (id) ON DELETE CASCADE NOT NULL)")
-    cur.execute("UPDATE assigned SET assigned_to=? WHERE ticket_id", (user, ticketID))
+    cur.execute(schema.ticket_status, ("in progress", ticket_id))
+    con.commit()
+    cur.execute(schema.assign_it, (user, ticket_id))
     con.commit()
     cur.close()
     con.close()
@@ -199,30 +163,27 @@ def assignTicket():
        'assign_it': True
     })
 
-@app.route('/status', methods=['POST'])
-def ticketStatus():
-    status = request.form['tixstatus']
+
+@app.route('/closeTicket', methods=['POST'])
+def close_ticket():
+    ticket_id = request.form['closetix']
+    ticket_conf = request.form['closetixconf']
     comment = request.form['closecomment']
-    # TODO: how do we know which ticket is being changed?
-    # ticketID = getTicketID()
+
     con = sql.connect("ITsupport.db", timeout=10)
     con.row_factory = dict_factory
     cur = con.cursor()
-    if status == 'open':
-        cur.execute("UPDATE ticket SET status=? WHERE ticket_id", (status, ticketID))
-    elif status == 'in_progress':
-        cur.execute("UPDATE ticket SET status=? WHERE ticket_id", (status, ticketID))
-    elif status == 'closed':
-        # TODO: need a way to get the IT comment
-        cur.execute("UPDATE ticket SET status=?, it_comment=?, date_closed=? WHERE ticket_id=?", (status, comment, strftime("%Y-%m-%d", gmtime()), ticketID))
-    else:
+    if ticket_id == ticket_conf:
+        cur.execute(schema.close_ticket, ("closed", comment, strftime("%Y-%m-%d", gmtime()), ticket_id))
+        con.commit()
+        cur.close()
+        con.close()
         return jsonify({
-            # ajax return failed to update status/not a correct enum value
-            'ticketstatus': False
+            'closed': True
         })
-    con.commit()
-    cur.close()
-    con.close()
-    return jsonify({
-       'ticketstatus': True
-    })
+    else:
+        cur.close()
+        con.close()
+        return jsonify({
+            'close': False
+        })
