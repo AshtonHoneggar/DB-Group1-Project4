@@ -1,5 +1,7 @@
 $(document).ready(function(){
-    $('#homeComponent').hide();
+    // $('#homeComponent').hide();
+    $('#itHome').hide();
+    $('#userHome').hide();
     $('#Login').on('click', function() {
         $.ajax({
             url: '/login',
