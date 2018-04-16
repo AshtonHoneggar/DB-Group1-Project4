@@ -1,6 +1,6 @@
 import schema
 import sqlite3 as sql
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, session, jsonify, render_template
 from time import gmtime, strftime
 
 
@@ -44,6 +44,7 @@ def login():
     cur.close()
     # if user and password are not in users table, error message appears
     if user == temp['username'] and password == temp['password']:
+        session['username'] = user
         return jsonify({
             'auth': True,
             'user': {
@@ -108,7 +109,7 @@ def get_open_tickets():
 
 @app.route('/getAssigned', methods=['POST'])
 def get_assigned_tickets():
-    user = request.args.get("temp")
+    user = session['username']
     con = sql.connect("ITsupport.db", timeout=10)
     con.row_factory = dict_factory
     cur = con.cursor()
@@ -126,15 +127,15 @@ def get_assigned_tickets():
 
 @app.route('/newTicket', methods=['POST'])
 def new_ticket():
-    user = request.args.get("temp")
-    issue = request.form['issuetix']
+    user = session['username']
+    issue = request.form['ticketType']
     comment = request.form['commenttix']
     con = sql.connect("ITsupport.db", timeout=10)
     con.row_factory = dict_factory
     cur = con.cursor()
     cur.execute(schema.create_ticket)
     cur.execute(schema.create_assigned)
-    cur.execute(schema.new_ticket, (issue, comment, strftime("%Y-%m-%d", gmtime())))
+    cur.execute(schema.new_ticket, (issue, comment, strftime("%Y-%m-%d", gmtime()), user))
     ticket_id = cur.lastrowid
     con.commit()
     cur.execute(schema.assign_report, (user, ticket_id))
@@ -144,11 +145,12 @@ def new_ticket():
     return jsonify({
        'newticket': True
     })
+    
 
 
 @app.route('/assignTicket', methods=['POST'])
 def assign_ticket():
-    user = request.args.get("temp")
+    user = session['username']
     # IT inputs ticket id to assign them to it
     ticket_id = request.form['assigntix']
     con = sql.connect("ITsupport.db", timeout=10)
@@ -188,3 +190,5 @@ def close_ticket():
         return jsonify({
             'close': False
         })
+
+app.secret_key = 'A0Zr98j/3yX R~X0H!jmN]LWX/,?RT'

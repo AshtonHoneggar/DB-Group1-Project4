@@ -77,38 +77,25 @@ $(document).ready(function(){
         };
     });
     //For userHome
-    $('#EventSubmit2').on('click', function() {
-        let user4 = JSON.parse(localStorage.getItem('userdata'));
-        let tempForm2 = {
-            username: user4.username,
-            eventName: $('#eventName2').val(),
-            eventTime: $('#eventTime2').val(),
-            eventUrl: $('#eventUrl2').val()
-        };
-        console.log(tempForm1);
-        console.log(tempForm2);
-        $.ajax({
-            url: '/newEvent',
-            data: tempForm1,
+    $('#submitTicket').on('click', function() {
+          $.ajax({
+            url: '/newTicket',
+           data: $('#formSubmitTicket').serialize(),
             type: 'POST',
             success: function(response) {
                 console.log(response);
-                if(response.newEventStatus === true){
-                    console.log('Event submit successful');
-                    $('#eventName').val("");
-                    $('#eventTime').val("");
-                    $('#eventUrl').val("");
-                    $('#errorMessageNewEvent').text('Success!');
-                    $('#eventTableBody').append("<tr><td>" + tempForm.eventName + "</td><td>" + tempForm.eventTime + "</td><td>" + tempForm.eventUrl + "</td></tr>");
+                if(response.newticket === true){
+                    $('#myForm').trigger("reset");
+                    $('#errorMessageReg').text('Ticket submission successful!')
                 }else{
-                    $('#errorMessageNewEvent').text('Event submittal failed. Try again.');
+                    $('#errorMessageReg').text('Ticket submission failed. Try again.')
                 }
             },
             error: function(error) {
                 console.log(error);
             }
         });
-    });
+    }); 
 
     function populateUser(){
         let user = JSON.parse(localStorage.getItem('userdata'));
