@@ -110,7 +110,6 @@ $(document).ready(function(){
         if (tempuser) {
             parseduser = JSON.parse(tempuser);
             let user = parseduser.username;
-            console.log(user);
             $.ajax({
                 url: '/getAssigned',
                 data: {
@@ -120,13 +119,13 @@ $(document).ready(function(){
                 dataType: 'json',
                 type: 'POST',
                 success: function(response) {
-                    console.log(response);
                     // $('#PopulateTable').hide();
-                    $('#eventTableBody').empty();
-                    localStorage.setItem('userevents', JSON.stringify(response.events));
-                    response.events.forEach(function(val){
-                        $('#eventTableBody').append("<tr><td>" + val.eventName + "</td><td>" + val.eventTime + "</td><td>" + val.eventUrl + "</td></tr>");
-                    })
+                    $('.eventTableBody').empty();
+                    console.log(response.assignedtickets);
+                    localStorage.setItem('userevents', JSON.stringify(response.assignedtickets));
+                    response.assignedtickets.forEach(function(val){
+                        $('.eventTableBody').append("<tr><td>" + val.id + "</td><td>" + val.date_opened + "</td><td>" + val.date_closed + "</td><td>" + val.status + "</td><td>" + val.reported_by + "</td><td>" + val.assigned_to + "</td><td>" + val.issue + "</td><td>" + val.user_comment + "</td><td>" + val.IT_comment + "</td></tr>");
+                    });
                 },
                 error: function(error) {
                     console.log(error);
