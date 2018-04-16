@@ -26,7 +26,7 @@ create_ticket = "CREATE TABLE IF NOT EXISTS tickets(" \
                 "date_opened  DATE    NOT NULL," \
                 "date_closed  DATE)"
 
-new_ticket = "INSERT INTO tickets(issue, user_comment, date_opened) VALUES (?,?,?);"
+new_ticket = "INSERT INTO tickets(issue, user_comment, date_opened, reported_by, status) VALUES (?,?,?,?,'open');"
 
 open_ticket = "SELECT * FROM tickets WHERE date_closed=NULL"
 
