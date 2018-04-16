@@ -14,8 +14,10 @@ $(document).ready(function(){
                     $('#loginComponent').hide();
                     let user = JSON.parse(localStorage.getItem('userdata'));
                     console.log(user);
-                    if (user.role.toUpperCase() === 'IT')
+                    if (user.role.toUpperCase() === 'IT') {
                         $('#itHome').show();
+                        getUnassignedTable();
+                    }
                     else
                         $('#userHome').show();
                     populateUser();
@@ -103,7 +105,6 @@ $(document).ready(function(){
         $('.greeting').append(user.firstName);
     }
 
-
     function getAssignedTable(){
         tempuser = localStorage.getItem('userdata');
         let parseduser;
@@ -121,13 +122,34 @@ $(document).ready(function(){
                 success: function(response) {
                     // $('#PopulateTable').hide();
                     $('.eventTableBody').empty();
-                    console.log(response.assignedtickets);
                     localStorage.setItem('userevents', JSON.stringify(response.assignedtickets));
                     response.assignedtickets.forEach(function(val){
                         $('.eventTableBody').append("<tr><td>" + val.id + "</td><td>" + val.date_opened + "</td><td>" + val.date_closed + "</td><td>" + val.status + "</td><td>" + val.reported_by + "</td><td>" + val.assigned_to + "</td><td>" + val.issue + "</td><td>" + val.user_comment + "</td><td>" + val.IT_comment + "</td></tr>");
                     });
                 },
                 error: function(error) {
+                    console.log(error);
+                }
+            });
+        }
+    }
+
+    function getUnassignedTable(){
+        tempuser = localStorage.getItem('userdata');
+        let pardeduser;
+        if (tempuser) {
+            parseduser = JSON.parse(tempuser);
+            $.ajax({
+                url: '/getUnassigned',
+                type: 'POST',
+                success: function(response) {
+                    $('#unassignedTableBody').empty();
+                    localStorage.setItem('userevents', JSON.stringify(response.unassignedtickets));
+                    response.unassignedtickets.forEach(function(val){
+                        $('#unassignedTableBody').append("<tr><td>" + val.id + "</td><td>" + val.date_opened + "</td><td>" + val.status + "</td><td>" + val.reported_by + "</td><td>" + val.issue + "</td><td>" + val.user_comment + "</td></tr>");
+                    });
+                },
+                error: function(error){
                     console.log(error);
                 }
             });

@@ -47,3 +47,5 @@ assign_report = "INSERT INTO assigned(reported_by, ticket_id) VALUES (?,?);"
 assign_it = "UPDATE assigned SET assigned_to=? WHERE ticket_id=?"
 
 assigned_ticket = "SELECT * FROM tickets T, assigned A WHERE (A.assigned_to=? OR A.reported_by=?) AND A.ticket_id=T.id ORDER BY T.date_opened DESC"
+
+unassigned_ticket = "SELECT * FROM tickets T, assigned A EXCEPT SELECT * FROM tickets T, assigned A WHERE A.ticket_id=T.id ORDER BY T.date_opened DESC"

@@ -124,6 +124,22 @@ def get_assigned_tickets():
         'assignedtickets': assigned_data
     })
 
+@app.route('/getUnassigned', methods=['POST'])
+def get_unassigned_tickets():
+    user = session['username']
+    con = sql.connect("ITsupport.db", timeout=10)
+    con.row_factory = dict_factory
+    cur = con.cursor()
+    cur.execute(schema.create_ticket)
+    cur.execute(schema.create_assigned)
+    cur.execute(schema.unassigned_ticket)
+    unassigned_data = cur.fetchall()
+    con.commit()
+    cur.close()
+    con.close()
+    return jsonify({
+        'unassignedtickets': unassigned_data
+    })
 
 @app.route('/newTicket', methods=['POST'])
 def new_ticket():
