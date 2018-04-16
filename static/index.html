@@ -79,11 +79,6 @@
                                 <tbody class='eventTableBody'></tbody>
                             </table>
                         </div>
-                        <div class="row">
-                            <div class="col-md-6 offset-md-3">
-                                <button id="PopulateTable" class="btn btn-primary btn-block" type="button">Update Table</button>
-                            </div>
-                        </div>
                         <hr width="100%">
                         <div class="row">
                             <div id='closeDiv' class="col-md-6">
@@ -127,7 +122,11 @@
                         <div class="row">
                             <span id='errorMessageAssignMe'></span>
                             <div class="col-md-6 offset-md-3">
-                                <button id="AssignSubmit" class="btn btn-primary btn-block" type="button">Assign tickets to me</button>
+                                <form id="form-assign-ticket" role="form">
+                                    <input type="text" name="assigntix" class="form-control" placeholder="Ticket ID" required value="">
+                                    <span id='errorMessageAssign'></span>
+                                    <button id="AssignTicket" class="btn btn-primary btn-block" type="button">Assign Ticket</button>
+                                </form>
                             </div>
                         </div>
                     </div>

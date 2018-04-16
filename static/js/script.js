@@ -64,10 +64,6 @@ $(document).ready(function(){
             }
         });
     });
-    // Repurpose as Update Table?
-    $('#PopulateTable').on('click', function() {
-        getTable();
-    });
     //For itHome
     $('#EventSubmit').on('click', function() {
         let user3 = JSON.parse(localStorage.getItem('userdata'));
@@ -88,9 +84,10 @@ $(document).ready(function(){
                 console.log(response);
                 if(response.newticket === true){
                     $('#myForm').trigger("reset");
-                    $('#errorMessageReg').text('Ticket submission successful!')
+                    $('#errorMessageReg').text('Ticket submission successful!');
+                    getAssignedTable();
                 }else{
-                    $('#errorMessageReg').text('Ticket submission failed. Try again.')
+                    $('#errorMessageReg').text('Ticket submission failed. Try again.');
                 }
             },
             error: function(error) {
@@ -98,6 +95,28 @@ $(document).ready(function(){
             }
         });
     }); 
+
+    $('#AssignTicket').on('click', function() {
+        $.ajax({
+            url: '/assignTicket',
+            data: $('#form-assign-ticket').serialize(),
+            type: 'POST',
+            success: function(response) {
+                console.log(response);
+                if (response.assign_it === true){
+                    $('#form-assign-ticket').trigger("reset");
+                    $('#errorMessageAssign').text('Ticket assign successful!');
+                    getAssignedTable();
+                    getUnassignedTable();
+                }else{
+                    $('#errorMessageAssign').text('Ticket assignment failed. Try again.');
+                }
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        })
+    })
 
     function populateUser(){
         let user = JSON.parse(localStorage.getItem('userdata'));
