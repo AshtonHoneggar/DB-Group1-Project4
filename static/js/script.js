@@ -178,12 +178,12 @@ $(document).ready(function(){
     
    $('#itLogoutButton').on('click', function() {
         $.ajax({
-            url: '/logout',
+            url: '/logoutIT',
             data: $('#formITLogout').serialize(),
             type: 'POST',
             success: function(response) {
                console.log(response);
-                if (response.isUser === true){
+                if (response.isIT === true){
                     $('logoutComponent').show(); 
                     $('#itLogout').show();
                     $('#userLogout').hide();
@@ -198,7 +198,7 @@ $(document).ready(function(){
 
       $('#userLogoutButton').on('click', function() {
         $.ajax({
-            url: '/logout',
+            url: '/logoutUser',
             data: $('#formUserLogout').serialize(),
             type: 'POST',
             success: function(response) {
@@ -215,5 +215,12 @@ $(document).ready(function(){
             }
         });
     }); 
+    
+    $('#SubmitLogout').on('click', function() {
+        //redirect user to login page
+        location.reload()
+    }); 
+        
+
     
 });
