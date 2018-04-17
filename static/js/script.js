@@ -84,7 +84,7 @@ $(document).ready(function(){
             success: function(response) {
                 console.log(response);
                 if(response.newticket === true){
-                    $('#myForm').trigger("reset");
+                    $('#formSubmitTicket').trigger("reset");
                     $('#errorMessageReg').text('Ticket submission successful!');
                     getAssignedTable();
                 }else{
