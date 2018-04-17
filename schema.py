@@ -30,7 +30,7 @@ new_ticket = "INSERT INTO tickets(issue, user_comment, date_opened, reported_by,
 
 open_ticket = "SELECT * FROM tickets WHERE date_closed=NULL"
 
-close_ticket = "UPDATE ticket SET status=?, it_comment=?, date_closed=? WHERE id=?"
+close_ticket = "UPDATE tickets SET status=?, it_comment=?, date_closed=? WHERE id=?"
 
 ticket_status = "UPDATE tickets SET status=? WHERE id=?"
 
