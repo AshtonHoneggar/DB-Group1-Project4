@@ -40,7 +40,7 @@
                         <input type="text" name="firstreg" class="form-control" placeholder="First Name" required autofocus>
                         <input type="text" name="lastreg" class="form-control" placeholder="Last Name" required>
                         <!-- TODO: Role drop down menu -->
-                        <p>Role:</p><select name="rolereg"> <option value="user">User</option>
+                        <label>Role</label><select name="rolereg"> <option value="user">User</option>
                                  <option value="it">IT</option>
                         </select>
                         <input type="text" name="userreg" class="form-control" placeholder="User Name" required>
@@ -66,8 +66,6 @@
                             </form>
                         </div>
                         <hr width="100%">
-                            
-                        
                         <h2>Assigned Tickets</h2>
                         <div class="row">
                             <table class="table">
@@ -96,7 +94,7 @@
                                     <input type="text" name="closetixconf" class="form-control" placeholder="Confirm ID" required value="">
                                     <input type="text" name="closecomment" class="form-control" placeholder="Comment" required value="">
                                     <span id='errorMessageClose'></span>
-                                    <button id="CloseTicket" class="btn btn-primary btn-block" type="button">Close Ticket</button>
+                                    <button class="CloseTicket btn btn-primary btn-block" type="button">Close Ticket</button>
                                 </form>
                             </div>
                             <div id='UnassignDiv' class="col-md-6">
@@ -174,9 +172,7 @@
                             <div id='newEventDiv2' class="col-md-8 offset-md-2">
                                 <form class="form-signin" id='formSubmitTicket' role="form">
                                     <h2>Create new ticket</h2>
-                                    <!-- TODO: create ticket form with drop down for issue type -->
-                                     <p>Issue Type:</p>
-                                     <select name="ticketType"> <option value="software"> Software </option>
+                                     <label>Issue Type</label><select name="ticketType"> <option value="software"> Software </option>
                                      <option value="hardware">Hardware</option>
                                      <option value="other">Other</option>
                                     </select>

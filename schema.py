@@ -30,7 +30,7 @@ new_ticket = "INSERT INTO tickets(issue, user_comment, date_opened, reported_by,
 
 open_ticket = "SELECT * FROM tickets WHERE date_closed=NULL"
 
-close_ticket = "UPDATE ticket SET status=?, it_comment=?, date_closed=? WHERE id=?"
+close_ticket = "UPDATE tickets SET status=?, it_comment=?, date_closed=? WHERE id=?"
 
 ticket_status = "UPDATE tickets SET status=? WHERE id=?"
 
@@ -45,6 +45,8 @@ create_assigned = "CREATE TABLE IF NOT EXISTS assigned (" \
 assign_report = "INSERT INTO assigned(reported_by, ticket_id) VALUES (?,?);"
 
 assign_it = "UPDATE assigned SET assigned_to=? WHERE ticket_id=?"
+
+unassign_it = "UPDATE assigned SET assigned_to=NULL WHERE ticket_id=?"
 
 assigned_ticket = "SELECT * FROM tickets T, assigned A WHERE (A.assigned_to=? OR A.reported_by=?) AND A.ticket_id=T.id ORDER BY T.date_opened DESC"
 

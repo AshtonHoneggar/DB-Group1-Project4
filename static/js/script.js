@@ -52,19 +52,29 @@ $(document).ready(function(){
             }
         });
     });
-    $('#EventSubmit').on('click', function() {
+    $('.CloseTicket').on('click', function() {
         $.ajax({
-            url: '/newEvent',
-            data: $('#newEventForm').serialize(),
+            url: '/closeTicket',
+            data: $('#formClose').serialize(),
             type: 'POST',
             success: function(response) {
                 console.log(response);
+                if (response.closed === true) {
+                     $('#formClose').trigger("reset");
+                     $('#errorMessageClose').text('Ticket closed successfully!');
+                      getAssignedTable();
+                      getUnassignedTable();
+                } else {
+                    $('#errorMessageClose').text('Ticket closure failed. Try again.');
+                } 
             },
             error: function(error) {
                 console.log(error);
             }
         });
     });
+
+    
     //For itHome
     $('#EventSubmit').on('click', function() {
         let user3 = JSON.parse(localStorage.getItem('userdata'));
@@ -116,8 +126,31 @@ $(document).ready(function(){
             error: function(error) {
                 console.log(error);
             }
+        });
+    });
+    
+    $('#UnassignTicket').on('click', function() {
+        $.ajax({
+            url: '/unassignTicket',
+            data: $('#formUnassign').serialize(),
+            type: 'POST',
+            success: function(response) {
+                console.log(response);
+                if (response.unassign_it === true){
+                    $('#formUnassign').trigger("reset");
+                    $('#errorMessageUnassign').text('Ticket unassign successful!');
+                    getAssignedTable();
+                    getUnassignedTable();
+                }else{
+                    $('#errorMessageUnassign').text('Ticket unassign failed. Try again.');
+                }
+            },
+            error: function(error) {
+                console.log(error);
+            }
         })
     })
+
 
     function populateUser(){
         let user = JSON.parse(localStorage.getItem('userdata'));
