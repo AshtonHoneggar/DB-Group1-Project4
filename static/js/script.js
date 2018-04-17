@@ -184,7 +184,7 @@ $(document).ready(function(){
             success: function(response) {
                console.log(response);
                 if (response.isIT === true){
-                    $('logoutComponent').show(); 
+                    $('#logoutComponent').show(); 
                     $('#itLogout').show();
                     $('#userLogout').hide();
                      $('#itHome').hide();
@@ -220,7 +220,10 @@ $(document).ready(function(){
         //redirect user to login page
         location.reload()
     }); 
-        
+       $('#Logout').on('click', function() {
+        //redirect user to login page
+        location.reload()
+    });    
 
     
 });
