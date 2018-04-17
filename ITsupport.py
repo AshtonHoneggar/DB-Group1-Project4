@@ -34,40 +34,55 @@ def main():
 
 @app.route('/login', methods=['POST'])
 def login():
-    user = request.form['username']
+    #username/password entered by user
+    user = request.form['username']     
     password = request.form['password']
+    #Connect to database
     con = sql.connect("ITsupport.db")
     con.row_factory = dict_factory
     cur = con.cursor()
+    #Execute SQL statement login_user found in schema
     cur.execute(schema.login_user, (user,))
+    #Stores user returned from SQL statement
     temp = cur.fetchone()
     cur.close()
-    # if user and password are not in users table, error message appears
-    if user == temp['username'] and password == temp['password']:
-        session['username'] = user
-        return jsonify({
-            'auth': True,
-            'user': {
-                "username": user,
-                "firstName": temp["firstname"],
-                "lastName": temp["lastname"], 
-                "role": temp["role"]
-            }
-        })
-    else:
+    #If username is not in the table:
+    if temp == None:
         return jsonify({
             'auth': False
         })
+    #if username is in table:
+    else:
+        # if username/password entered do not match what is in users table, return error
+        if user == temp['username'] and password == temp['password']:
+            session['username'] = user
+            return jsonify({
+                'auth': True,
+                'user': {
+                "username": user,
+                #information returned from Users table 
+                "firstName": temp["firstname"],
+                "lastName": temp["lastname"], 
+                "role": temp["role"]
+                }
+            })
+        else:
+            return jsonify({
+                'auth': False
+            })
 
 
+#TODO: Make sure that registered user is unique, catch error if they are not
 @app.route('/register', methods=['POST'])
 def register():
+    #information collected in registration form
     first = request.form['firstreg']
     last = request.form['lastreg']
     role = request.form['rolereg']
     user = request.form['userreg']
     password = request.form['passwordreg']
     passwordconf = request.form['passwordconfreg']
+    #connect to SQL database
     con = sql.connect("ITsupport.db", timeout=10)
     con.row_factory = dict_factory
     cur = con.cursor()
@@ -86,14 +101,14 @@ def register():
         })
 
 #################################################################################
-# Tickets/assigned
+# Populate tables in application to show different tickets
 #################################################################################
 
 
 @app.route('/getTickets', methods=['POST'])
-# used for IT to get all open tickets, use /getAssigned to return your tickets
+# 
 def get_open_tickets():
-    con = sql.connect("ITsupport.db", timeout=10)
+    con = sql.connect("ITsupport.db", timeout=10)   #Connect to SQL database
     con.row_factory = dict_factory
     cur = con.cursor()
     cur.execute(schema.create_ticket)
@@ -108,6 +123,7 @@ def get_open_tickets():
 
 
 @app.route('/getAssigned', methods=['POST'])
+#used in IT homepage and user homepage to see all tickets associated with that user/IT employee
 def get_assigned_tickets():
     user = session['username']
     con = sql.connect("ITsupport.db", timeout=10)
@@ -125,6 +141,7 @@ def get_assigned_tickets():
     })
 
 @app.route('/getUnassigned', methods=['POST'])
+#used to see tickets unassigned to anyone
 def get_unassigned_tickets():
     user = session['username']
     con = sql.connect("ITsupport.db", timeout=10)
@@ -142,6 +159,7 @@ def get_unassigned_tickets():
     })
 
 @app.route('/newTicket', methods=['POST'])
+#used on User Homepage for user to submit new ticket, which is created as saved in tickets table
 def new_ticket():
     user = session['username']
     issue = request.form['ticketType']
