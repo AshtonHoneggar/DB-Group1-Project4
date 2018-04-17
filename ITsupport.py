@@ -101,7 +101,8 @@ def register():
         })
 
 #################################################################################
-# Populate tables in application to show different tickets
+# Populate tables in application to show different tickets,
+# Assign tickets, create tickets, unassign tickets, close tickets
 #################################################################################
 
 
@@ -190,15 +191,25 @@ def assign_ticket():
     con = sql.connect("ITsupport.db", timeout=10)
     con.row_factory = dict_factory
     cur = con.cursor()
-    cur.execute(schema.ticket_status, ("in progress", ticket_id))
-    con.commit()
-    cur.execute(schema.assign_it, (user, ticket_id))
-    con.commit()
-    cur.close()
-    con.close()
-    return jsonify({
-       'assign_it': True
-    })
+    cur.execute(schema.ticket_exists, (ticket_id,))
+    ticketTest = cur.fetchone()
+    if ticketTest == None:
+        cur.close()
+        con.close()
+        return jsonify({
+            'assign_it': False
+        })
+    else:
+        
+        cur.execute(schema.ticket_status, ("in progress", ticket_id))
+        con.commit()
+        cur.execute(schema.assign_it, (user, ticket_id))
+        con.commit()
+        cur.close()
+        con.close()
+        return jsonify({
+            'assign_it': True
+        })
 
 @app.route('/unassignTicket', methods=['POST'])
 def unassign_ticket():
@@ -208,15 +219,24 @@ def unassign_ticket():
     con = sql.connect("ITsupport.db", timeout=10)
     con.row_factory = dict_factory
     cur = con.cursor()
-    cur.execute(schema.ticket_status, ("open", ticket_id))
-    con.commit()
-    cur.execute(schema.unassign_it, (ticket_id))
-    con.commit()
-    cur.close()
-    con.close()
-    return jsonify({
-       'unassign_it': True
-    })
+    cur.execute(schema.ticket_exists, (ticket_id,))
+    ticketTest = cur.fetchone()
+    if ticketTest == None:
+        cur.close()
+        con.close()
+        return jsonify({
+            'assign_it': False
+        })
+    else:
+        cur.execute(schema.ticket_status, ("open", ticket_id))
+        con.commit()
+        cur.execute(schema.unassign_it, (ticket_id))
+        con.commit()
+        cur.close()
+        con.close()
+        return jsonify({
+        'unassign_it': True
+        })
 
 
 @app.route('/closeTicket', methods=['POST'])
@@ -224,18 +244,26 @@ def close_ticket():
     ticket_id = request.form['closetix']
     ticket_conf = request.form['closetixconf']
     comment = request.form['closecomment']
-
     con = sql.connect("ITsupport.db", timeout=10)
     con.row_factory = dict_factory
     cur = con.cursor()
     if ticket_id == ticket_conf:
-        cur.execute(schema.close_ticket, ("closed", comment, strftime("%Y-%m-%d", gmtime()), ticket_id))
-        con.commit()
-        cur.close()
-        con.close()
-        return jsonify({
-            'closed': True
-        })
+        cur.execute(schema.ticket_exists, (ticket_id,))
+        temp = cur.fetchone()
+        if temp == None:
+            cur.close()
+            con.close()
+            return jsonify({
+                'closed': False
+            })
+        else:
+            cur.execute(schema.close_ticket, ("closed", comment, strftime("%Y-%m-%d", gmtime()), ticket_id))
+            con.commit()
+            cur.close()
+            con.close()
+            return jsonify({
+                'closed': True
+            })
     else:
         cur.close()
         con.close()
@@ -243,7 +271,10 @@ def close_ticket():
             'closed': False
         })
 
-    
+################################################################################
+# Logout
+################################################################################
+
 @app.route('/logoutIT', methods=['POST'])
 def logoutIT():
     return jsonify({

@@ -34,6 +34,8 @@ close_ticket = "UPDATE tickets SET status=?, it_comment=?, date_closed=? WHERE i
 
 ticket_status = "UPDATE tickets SET status=? WHERE id=?"
 
+ticket_exists = "Select * FROM tickets WHERE id=?"
+
 #################################################################################
 # assigned table
 #################################################################################
