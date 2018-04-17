@@ -52,13 +52,21 @@ $(document).ready(function(){
             }
         });
     });
-    $('#EventSubmit').on('click', function() {
+    $('.CloseTicket').on('click', function() {
         $.ajax({
-            url: '/newEvent',
-            data: $('#newEventForm').serialize(),
+            url: '/closeTicket',
+            data: $('#formClose').serialize(),
             type: 'POST',
             success: function(response) {
                 console.log(response);
+                if (response.closed === true) {
+                     $('#formClose').trigger("reset");
+                     $('#errorMessageClose').text('Ticket closed successfully!');
+                      getAssignedTable();
+                      getUnassignedTable();
+                } else {
+                    $('#errorMessageClose').text('Ticket closure failed. Try again.');
+                } 
             },
             error: function(error) {
                 console.log(error);
