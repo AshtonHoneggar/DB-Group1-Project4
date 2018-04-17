@@ -58,8 +58,14 @@
                     <script src="{{ url_for('static', filename='js/home.js') }}"></script>
                     <div class="container">
                         <div class="row">
-                            <h1 class="greeting">Welcome&nbsp;</h1>
+                            <h1 class="greeting col-md-6">Welcome&nbsp;</h1>
+                            <form id='formITLogout' role="form">
+                                <button id="itLogoutButton" class="btn btn-lg btn-primary btn-block col-md-6" type="button">Logout</button>
+                            </form>
                         </div>
+                        
+                            
+                        
                         <h2>Assigned Tickets</h2>
                         <div class="row">
                             <table class="table">
@@ -137,6 +143,11 @@
                         <div class="row">
                             <h1 class="greeting">Welcome&nbsp;</h1>
                         </div>
+                        <div class = "row">
+                            <form id='formUserLogout' role="form">
+                                <button id="userLogoutButton" class="btn btn-lg btn-primary btn-block" type="button">Logout</button>
+                            </form>
+                        </div>
                         <div class="row">
                             <table class="table">
                                 <thead>
@@ -177,5 +188,33 @@
                 </div>
             </div>
         </div>
+        <div id='logoutComponent' class="container">
+		<div id='userLogout'>
+		<div class='row'>
+                <div id='logoutDiv'>
+                    <form class="form-signin" id='formLogin' role="form">
+                        <h2>Thank you for contacting IT support! </h2>
+						<h3> Please let us know how we can better support you by completing a small survey. </h3>
+						 <hr width="100%">
+							How would you rate our helpfulness? 
+							<select name="helpfulness"> 
+								 <option value="veryHelpful">Very Helpful</option>
+                                 <option value="notHelpful">Not Helpful</option>
+							</select>
+						<input type="text" name="surveyComment" class="form-control" placeholder="Comments" required autofocus value="">
+                        <button id="SubmitLogout" class="btn btn-lg btn-primary btn-block" type="button">Submit & Logout</button>
+                    </form>
+                </div>
+		</div>
+		</div>
+		<div id='itLogout'>
+		<div class='row'>
+			<h1>You are now logged out!</h1>
+			<form>
+			<button id="Logout" class="btn btn-lg btn-primary btn-block" type="button">Return to Login</button>
+			</form>
+		</div>
+		</div>
+		</div>
     </body>
  </html>
