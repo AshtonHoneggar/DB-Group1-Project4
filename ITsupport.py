@@ -204,7 +204,14 @@ def close_ticket():
         cur.close()
         con.close()
         return jsonify({
-            'close': False
+            'closed': False
         })
 
+    
+@app.route('/logout', methods=['POST'])
+def logout():
+    return jsonify({
+       'isUser': True
+    })
+    
 app.secret_key = 'A0Zr98j/3yX R~X0H!jmN]LWX/,?RT'
