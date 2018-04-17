@@ -208,10 +208,15 @@ def close_ticket():
         })
 
     
-@app.route('/logout', methods=['POST'])
-def logout():
+@app.route('/logoutIT', methods=['POST'])
+def logoutIT():
+    return jsonify({
+       'isIT': True
+    })
+    
+@app.route('/logoutUser', methods=['POST'])
+def logoutUser():
     return jsonify({
        'isUser': True
     })
-    
 app.secret_key = 'A0Zr98j/3yX R~X0H!jmN]LWX/,?RT'
