@@ -94,7 +94,7 @@ $(document).ready(function(){
             success: function(response) {
                 console.log(response);
                 if(response.newticket === true){
-                    $('#myForm').trigger("reset");
+                    $('#formSubmitTicket').trigger("reset");
                     $('#errorMessageReg').text('Ticket submission successful!');
                     getAssignedTable();
                 }else{
@@ -189,7 +189,7 @@ $(document).ready(function(){
 
     function getUnassignedTable(){
         tempuser = localStorage.getItem('userdata');
-        let pardeduser;
+        let parseduser;
         if (tempuser) {
             parseduser = JSON.parse(tempuser);
             $.ajax({
@@ -229,7 +229,7 @@ $(document).ready(function(){
         });
     });     
 
-      $('#userLogoutButton').on('click', function() {
+    $('#userLogoutButton').on('click', function() {
         $.ajax({
             url: '/logoutUser',
             data: $('#formUserLogout').serialize(),
