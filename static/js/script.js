@@ -41,7 +41,7 @@ $(document).ready(function(){
             success: function(response) {
                 console.log(response);
                 if(response.registered === true){
-                    $('#myForm').trigger("reset");
+                    $('#formRegister').trigger("reset");
                     $('#errorMessageReg').text('Registration successful!')
                 }else{
                     $('#errorMessageReg').text('Registration failed. Try again.')
