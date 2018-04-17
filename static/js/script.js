@@ -2,6 +2,7 @@ $(document).ready(function(){
     // $('#homeComponent').hide();
     $('#itHome').hide();
     $('#userHome').hide();
+    $('#logoutComponent').hide();
     $('#Login').on('click', function() {
         $.ajax({
             url: '/login',
@@ -174,4 +175,45 @@ $(document).ready(function(){
             });
         }
     }
+    
+   $('#itLogoutButton').on('click', function() {
+        $.ajax({
+            url: '/logout',
+            data: $('#formITLogout').serialize(),
+            type: 'POST',
+            success: function(response) {
+               console.log(response);
+                if (response.isUser === true){
+                    $('logoutComponent').show(); 
+                    $('#itLogout').show();
+                    $('#userLogout').hide();
+                     $('#itHome').hide();
+                }
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+    });     
+
+      $('#userLogoutButton').on('click', function() {
+        $.ajax({
+            url: '/logout',
+            data: $('#formUserLogout').serialize(),
+            type: 'POST',
+            success: function(response) {
+               console.log(response);
+                 if (response.isUser === true){
+                     $('#logoutComponent').show();
+                     $('#userLogout').show();
+                     $('#itLogout').hide();
+                     $('#userHome').hide();
+                }
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+    }); 
+    
 });
