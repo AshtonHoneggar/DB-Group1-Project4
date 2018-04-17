@@ -182,6 +182,24 @@ def assign_ticket():
        'assign_it': True
     })
 
+@app.route('/unassignTicket', methods=['POST'])
+def unassign_ticket():
+    user = session['username']
+    # IT inputs ticket id to assign them to it
+    ticket_id = request.form['unassigntix']
+    con = sql.connect("ITsupport.db", timeout=10)
+    con.row_factory = dict_factory
+    cur = con.cursor()
+    cur.execute(schema.ticket_status, ("open", ticket_id))
+    con.commit()
+    cur.execute(schema.unassign_it, (ticket_id))
+    con.commit()
+    cur.close()
+    con.close()
+    return jsonify({
+       'unassign_it': True
+    })
+
 
 @app.route('/closeTicket', methods=['POST'])
 def close_ticket():
