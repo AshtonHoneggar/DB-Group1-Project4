@@ -87,7 +87,9 @@ def register():
     con.row_factory = dict_factory
     cur = con.cursor()
     cur.execute(schema.create_user)
-    if password == passwordconf:
+    cur.execute(schema.login_user, (user,))
+    exists = (cur.fetchone() is not None)
+    if password == passwordconf and not exists:
         cur.execute(schema.register_user, (first, last, role, user, password))
         con.commit()
         cur.close()
@@ -96,6 +98,9 @@ def register():
             'registered': True
         })
     else:
+        con.rollback()
+        cur.close()
+        con.close()
         return jsonify({
             'registered': False
         })
